@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="HeePic private photo vault: protect photos, videos and files with a passcode and Face ID. Local-first storage with face-down lock, location lock, Wi‑Fi transfer and encrypted backup.">
+    <title>HeePic - Private Photo Vault</title>
+    <link rel="icon" href="../assets/app-icon-web.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --ink: #172033; --muted: #617085; --line: #dfe6ef; --blue: #2f6ff6;
+            --green: #20b486; --yellow: #ffbf3f; --red: #ff6b6b; --panel: #ffffff;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", sans-serif;
+            color: var(--ink); background: #f7faff; line-height: 1.6;
+        }
+        a { color: inherit; text-decoration: none; }
+        .page { width: min(1120px, calc(100% - 32px)); margin: 0 auto; }
+        .topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px 0; }
+        .brand { display: inline-flex; align-items: center; gap: 10px; font-size: 1.08rem; font-weight: 800; }
+        .brand-mark {
+            width: 38px; height: 38px; border-radius: 9px; display: inline-flex; overflow: hidden;
+            background: #fff; box-shadow: 0 8px 20px rgba(47, 111, 246, 0.18);
+        }
+        .brand-mark img { width: 100%; height: 100%; display: block; object-fit: cover; }
+        .nav { display: flex; align-items: center; gap: 22px; color: var(--muted); font-size: 0.94rem; }
+        .nav a:hover { color: var(--blue); }
+        .nav .download-mini {
+            color: #fff; background: var(--blue); border-radius: 999px; padding: 9px 15px; font-weight: 750;
+        }
+        .nav .download-mini:hover { color: #fff; background: #245fe0; }
+        .hero {
+            display: grid; grid-template-columns: minmax(0, 1.02fr) minmax(320px, 0.98fr);
+            gap: 54px; align-items: center; min-height: calc(100vh - 76px); padding: 26px 0 72px;
+        }
+        .eyebrow {
+            display: inline-flex; align-items: center; gap: 8px; color: #175ac0; background: #eef5ff;
+            border: 1px solid #d9e8ff; border-radius: 999px; padding: 7px 12px;
+            font-size: 0.9rem; font-weight: 750; margin-bottom: 20px;
+        }
+        h1 { max-width: 780px; font-size: clamp(2.4rem, 5.6vw, 4.6rem); line-height: 1.06; }
+        .hero-copy { margin-top: 24px; max-width: 650px; color: var(--muted); font-size: clamp(1.05rem, 2vw, 1.28rem); }
+        .hero-slogan {
+            display: inline-flex; align-items: center; gap: 10px; margin-top: 18px; color: #175ac0;
+            background: #fff; border: 1px solid #d9e8ff; border-radius: 8px; padding: 12px 16px;
+            font-size: clamp(1.08rem, 2vw, 1.35rem); font-weight: 900;
+            box-shadow: 0 12px 30px rgba(47, 111, 246, 0.12);
+        }
+        .hero-slogan i { color: var(--blue); font-size: 1rem; }
+        .hero-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 14px; margin-top: 28px; }
+        .btn-soon {
+            display: inline-flex; align-items: center; gap: 12px; color: #fff; background: #617085;
+            border-radius: 14px; padding: 13px 20px; font-weight: 800;
+            box-shadow: 0 14px 34px rgba(97, 112, 133, 0.18); cursor: default;
+        }
+        .btn-soon i { font-size: 1.55rem; }
+        .download-note { margin-top: 14px; color: var(--muted); font-size: 0.9rem; }
+        .download-note a { color: var(--blue); text-decoration: underline; text-underline-offset: 3px; }
+        .secondary-link {
+            display: inline-flex; align-items: center; gap: 8px; color: var(--blue); font-weight: 750; padding: 12px 0;
+        }
+        .phone-wrap { display: flex; justify-content: center; align-items: center; min-height: 640px; }
+        .mobile-phone-wrap { display: none; }
+        .phone-stage {
+            position: relative; width: min(420px, 92vw); min-height: 630px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .phone-frame {
+            width: min(360px, 82vw); overflow: hidden; background: #fff; border-radius: 32px;
+            box-shadow: 0 36px 82px rgba(15, 23, 42, 0.22); z-index: 1;
+        }
+        .app-shot { width: 100%; height: auto; display: block; border: 0; border-radius: 32px; }
+        .screenshot-grid {
+            display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 14px; margin-top: 28px;
+        }
+        .screenshot-card {
+            overflow: hidden; background: #fff; border: 1px solid var(--line); border-radius: 8px;
+            box-shadow: 0 12px 30px rgba(20, 37, 63, 0.06);
+        }
+        .screenshot-card img { width: 100%; height: auto; display: block; }
+        .blue { background: var(--blue); } .green { background: var(--green); } .red { background: var(--red); }
+        section { padding: 74px 0; }
+        .section-head { max-width: 760px; margin-bottom: 28px; }
+        .section-head h2 { font-size: clamp(2rem, 4vw, 3.2rem); line-height: 1.12; }
+        .section-head p { color: var(--muted); font-size: 1.06rem; margin-top: 12px; }
+        .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+        .card {
+            background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 24px;
+            box-shadow: 0 12px 30px rgba(20, 37, 63, 0.06);
+        }
+        .card .icon {
+            width: 42px; height: 42px; display: grid; place-items: center; color: #fff;
+            border-radius: 8px; margin-bottom: 18px;
+        }
+        .card h3 { font-size: 1.16rem; margin-bottom: 8px; }
+        .card p { color: var(--muted); font-size: 0.98rem; }
+        .feature-panel {
+            background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 32px;
+            box-shadow: 0 12px 30px rgba(20, 37, 63, 0.05);
+        }
+        .feature-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+        .feature-card {
+            min-height: 176px; display: flex; flex-direction: column; gap: 12px;
+            border: 1px solid var(--line); border-radius: 8px; padding: 18px; background: #f8fbff;
+        }
+        .feature-card i {
+            width: 38px; height: 38px; display: grid; place-items: center; color: #fff;
+            border-radius: 8px; font-size: 1rem;
+        }
+        .feature-card h3 { font-size: 1.05rem; line-height: 1.28; }
+        .feature-card p { color: var(--muted); font-size: 0.95rem; }
+        .feature-note {
+            margin-top: 18px; color: #47607c; background: #eef5ff; border: 1px solid #d9e8ff;
+            border-radius: 8px; padding: 16px 18px; font-size: 0.98rem;
+        }
+        .scenarios { display: grid; grid-template-columns: 1.08fr 0.92fr; gap: 22px; align-items: stretch; }
+        .scenario-list { display: grid; gap: 12px; }
+        .scenario {
+            display: flex; align-items: flex-start; gap: 14px; background: #fff;
+            border: 1px solid var(--line); border-radius: 8px; padding: 18px;
+        }
+        .scenario i { width: 22px; color: var(--blue); font-size: 1.1rem; margin-top: 3px; }
+        .scenario strong { display: block; margin-bottom: 3px; }
+        .scenario p { color: var(--muted); font-size: 0.96rem; }
+        .quote-panel {
+            min-height: 100%; display: flex; flex-direction: column; justify-content: space-between;
+            background: #142033; color: #fff; border-radius: 8px; padding: 28px;
+        }
+        .quote-panel h3 { font-size: 2rem; line-height: 1.15; margin-bottom: 16px; }
+        .quote-panel p { color: #c8d3e3; }
+        .quote-panel .number {
+            color: var(--yellow); font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+            line-height: 1.2; font-weight: 900; margin-top: 28px;
+        }
+        .quote-panel .number span { display: block; }
+        .cta {
+            text-align: center; background: #eef5ff; border: 1px solid #d9e8ff;
+            border-radius: 8px; padding: 42px 24px;
+        }
+        .cta h2 { font-size: clamp(2rem, 4vw, 3rem); margin-bottom: 12px; }
+        .cta p { color: var(--muted); margin-bottom: 26px; font-size: 1.05rem; }
+        .download-actions { display: flex; justify-content: center; flex-wrap: wrap; gap: 14px; }
+        footer { border-top: 1px solid var(--line); padding: 28px 0 34px; color: var(--muted); font-size: 0.92rem; }
+        .footer-inner { display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+        .footer-links { display: flex; gap: 16px; flex-wrap: wrap; }
+        .footer-links a:hover { color: var(--blue); }
+        @media (max-width: 900px) {
+            .hero, .scenarios { grid-template-columns: 1fr; }
+            .hero { min-height: auto; padding-bottom: 42px; }
+            .hero > .phone-wrap { display: none; }
+            .mobile-phone-wrap { display: flex; margin-top: 30px; }
+            .phone-wrap, .phone-stage { min-height: auto; }
+            .cards { grid-template-columns: 1fr; }
+            .feature-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .screenshot-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+        @media (max-width: 640px) {
+            .page { width: min(100% - 24px, 1120px); }
+            .nav a:not(.download-mini) { display: none; }
+            .hero { padding-top: 16px; }
+            .hero-actions, .download-actions { flex-direction: column; align-items: stretch; }
+            .btn-soon, .secondary-link { justify-content: center; }
+            .feature-grid { grid-template-columns: 1fr; }
+            .feature-panel { padding: 20px; }
+            section { padding: 52px 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <header class="topbar">
+            <a class="brand" href="#top" aria-label="HeePic home">
+                <span class="brand-mark" aria-hidden="true"><img src="../assets/app-icon-web.png" alt=""></span>
+                <span>HeePic</span>
+            </a>
+            <nav class="nav" aria-label="Page navigation">
+                <a href="#privacy-first">Privacy first</a>
+                <a href="#features">Features</a>
+                <a href="#scenes">Use cases</a>
+                <a href="#download" class="download-mini">Download</a>
+                <a href="../">中文</a>
+            </nav>
+        </header>
+
+        <main id="top">
+            <section class="hero" aria-labelledby="hero-title">
+                <div>
+                    <div class="eyebrow">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        Private photo vault
+                    </div>
+                    <h1 id="hero-title">Lock private photos, videos and files before you open them.</h1>
+                    <p class="hero-copy">
+                        HeePic keeps private albums, videos, audio and files in a local vault. Passcode, Face ID, face-down lock and location lock protect the entrance. Content stays on your device by default and is not auto-synced to our servers.
+                    </p>
+                    <div class="hero-slogan">
+                        <i class="fa-solid fa-lock"></i>
+                        Local-first · Passcode protected · Privacy first
+                    </div>
+                    <div class="hero-actions">
+                        <span class="btn-soon"><i class="fa-brands fa-apple"></i><span>Coming to the App Store</span></span>
+                        <span class="btn-soon"><i class="fa-brands fa-android"></i><span>Coming to Android</span></span>
+                        <a class="secondary-link" href="#privacy-first">See privacy protections <i class="fa-solid fa-arrow-down"></i></a>
+                    </div>
+                    <p class="download-note">iOS 16+ · Android 8.0+ · <a href="../privacy-en.html">Privacy Policy</a></p>
+                </div>
+                <div class="phone-wrap" aria-label="HeePic app preview">
+                    <div class="phone-stage">
+                        <div class="phone-frame">
+                            <img class="app-shot" src="../assets/screenshot-lock-en.png" alt="HeePic lock screen" width="443" height="960" decoding="async">
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="privacy-first" aria-labelledby="privacy-first-title">
+                <div class="section-head">
+                    <h2 id="privacy-first-title">Set the privacy boundary first.</h2>
+                    <p>Vault content is mainly stored on your device. Opening, importing, backup and transfer are all initiated by you. We do not automatically upload album content to our public servers.</p>
+                </div>
+                <div class="feature-panel">
+                    <div class="feature-grid">
+                        <article class="feature-card">
+                            <i class="fa-solid fa-key blue"></i>
+                            <h3>Passcode & biometrics</h3>
+                            <p>Set a passcode on first launch, with Face ID / fingerprint. A guest passcode can protect the main vault from casual viewers.</p>
+                        </article>
+                        <article class="feature-card">
+                            <i class="fa-solid fa-mobile-screen green"></i>
+                            <h3>Face-down lock</h3>
+                            <p>Place the phone face down to lock automatically when you briefly hand it over.</p>
+                        </article>
+                        <article class="feature-card">
+                            <i class="fa-solid fa-location-dot blue"></i>
+                            <h3>Location lock</h3>
+                            <p>Allow unlock only at trusted places; deny access outside your safe zones.</p>
+                        </article>
+                        <article class="feature-card">
+                            <i class="fa-solid fa-camera red"></i>
+                            <h3>Intruder selfie</h3>
+                            <p>Optionally capture a photo after failed unlock attempts. Photos stay on device and can be reviewed or disabled anytime.</p>
+                        </article>
+                    </div>
+                    <p class="feature-note">The point is not “upload everything to the cloud.” It is to keep private content in a vault you control, with layered locks at the door.</p>
+                </div>
+                <div class="phone-wrap mobile-phone-wrap" aria-label="HeePic app preview">
+                    <div class="phone-stage">
+                        <div class="phone-frame">
+                            <img class="app-shot" src="../assets/screenshot-lock-en.png" alt="HeePic lock screen" width="443" height="960" loading="lazy" decoding="async">
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="features" aria-labelledby="features-title">
+                <div class="section-head">
+                    <h2 id="features-title">More than an album — a private toolkit.</h2>
+                    <p>Import media, organize favorites, transfer over the local network and create encrypted backups in one app.</p>
+                </div>
+                <div class="cards">
+                    <article class="card">
+                        <div class="icon blue"><i class="fa-solid fa-images"></i></div>
+                        <h3>Private albums & files</h3>
+                        <p>Organize photos, videos, audio and files with favorites and immersive browsing.</p>
+                    </article>
+                    <article class="card">
+                        <div class="icon green"><i class="fa-solid fa-wifi"></i></div>
+                        <h3>Local network transfer</h3>
+                        <p>Move files over Wi‑Fi or USB with a computer. Transfers do not pass through our public servers.</p>
+                    </article>
+                    <article class="card">
+                        <div class="icon red"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+                        <h3>Encrypted backup</h3>
+                        <p>Create encrypted backups and keep the password yourself, or export to a location you choose.</p>
+                    </article>
+                </div>
+                <div class="screenshot-grid" aria-label="HeePic feature screenshots">
+                    <figure class="screenshot-card"><img src="../assets/screenshot-lock-en.png" alt="Lock screen" width="443" height="960" loading="lazy" decoding="async"></figure>
+                    <figure class="screenshot-card"><img src="../assets/screenshot-albums-en.png" alt="Private albums" width="443" height="960" loading="lazy" decoding="async"></figure>
+                    <figure class="screenshot-card"><img src="../assets/screenshot-import-en.png" alt="Import into vault" width="443" height="960" loading="lazy" decoding="async"></figure>
+                    <figure class="screenshot-card"><img src="../assets/screenshot-favorites-en.png" alt="Favorites" width="443" height="960" loading="lazy" decoding="async"></figure>
+                    <figure class="screenshot-card"><img src="../assets/screenshot-security-en.png" alt="Layered privacy" width="443" height="960" loading="lazy" decoding="async"></figure>
+                    <figure class="screenshot-card"><img src="../assets/screenshot-backup-en.png" alt="Encrypted backup" width="443" height="960" loading="lazy" decoding="async"></figure>
+                </div>
+            </section>
+
+            <section id="scenes" aria-labelledby="scenes-title">
+                <div class="scenarios">
+                    <div>
+                        <div class="section-head">
+                            <h2 id="scenes-title">Hide what you do not want casually opened.</h2>
+                            <p>Shared phones, borrowed devices, or mixed work and personal photos — lock first, then open.</p>
+                        </div>
+                        <div class="scenario-list">
+                            <div class="scenario">
+                                <i class="fa-solid fa-user-lock"></i>
+                                <div>
+                                    <strong>Private photos & IDs</strong>
+                                    <p>Move ID photos, family shots and sensitive screenshots into the vault so they are no longer casually visible in the system Photos app.</p>
+                                </div>
+                            </div>
+                            <div class="scenario">
+                                <i class="fa-solid fa-briefcase"></i>
+                                <div>
+                                    <strong>Work files for later</strong>
+                                    <p>Keep contracts, receipts and screenshots in the vault until you export or back them up.</p>
+                                </div>
+                            </div>
+                            <div class="scenario">
+                                <i class="fa-solid fa-shield-halved"></i>
+                                <div>
+                                    <strong>Hand over the phone calmly</strong>
+                                    <p>Face-down lock, location lock and a guest passcode reduce the chance someone opens your main vault by mistake.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <aside class="quote-panel">
+                        <div>
+                            <h3>Your content. Your locks.</h3>
+                            <p>HeePic helps you organize and protect local private content. Passcodes and backup passwords stay with you — we cannot recover them for you.</p>
+                        </div>
+                        <div class="number">
+                            <span>Local-first</span>
+                            <span>No automatic vault cloud sync</span>
+                        </div>
+                    </aside>
+                </div>
+            </section>
+
+            <section id="download">
+                <div class="cta">
+                    <h2>Get HeePic and lock private content first.</h2>
+                    <p>Official store links will appear here after release. Until then, review the Privacy Policy and Terms of Service.</p>
+                    <div class="download-actions">
+                        <span class="btn-soon"><i class="fa-brands fa-apple"></i><span>Coming to the App Store</span></span>
+                        <span class="btn-soon"><i class="fa-brands fa-android"></i><span>Coming to Android</span></span>
+                    </div>
+                    <p class="download-note">Packages: iOS <code>com.heebox.HeePic</code> / <code>com.heebox.HeePic.int</code> · Android <code>com.heebox.family.heepic</code> / <code>com.heebox.family.heepic.int</code></p>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <div class="footer-inner">
+                <div>
+                    <p>© 2026 HeePic</p>
+                    <p>Operator: Hebi HeeBox Zhichuang Information Technology Co., Ltd.</p>
+                    <p>Contact: heebox2025@heebox.site</p>
+                </div>
+                <div class="footer-links">
+                    <a href="../">中文</a>
+                    <a href="../privacy-en.html">Privacy Policy</a>
+                    <a href="../terms-en.html">Terms of Service</a>
+                    <a href="mailto:heebox2025@heebox.site">Email</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>

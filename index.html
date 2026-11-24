@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="HeePic 私密相册保险箱：密码与 Face ID 保护照片、视频和文件，本地加密存储，支持翻转锁定、位置锁、局域网传输与加密备份。">
+    <title>HeePic - 私密相册保险箱</title>
+    <link rel="icon" href="assets/app-icon-web.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --ink: #172033;
+            --muted: #617085;
+            --line: #dfe6ef;
+            --blue: #2f6ff6;
+            --green: #20b486;
+            --yellow: #ffbf3f;
+            --red: #ff6b6b;
+            --bg: #f5f8fc;
+            --panel: #ffffff;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            color: var(--ink);
+            background: #f7faff;
+            line-height: 1.6;
+        }
+        a { color: inherit; text-decoration: none; }
+        .page { width: min(1120px, calc(100% - 32px)); margin: 0 auto; }
+        .topbar {
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 16px; padding: 18px 0;
+        }
+        .brand {
+            display: inline-flex; align-items: center; gap: 10px;
+            font-size: 1.08rem; font-weight: 800;
+        }
+        .brand-mark {
+            width: 38px; height: 38px; border-radius: 9px;
+            display: inline-flex; overflow: hidden; background: #fff;
+            box-shadow: 0 8px 20px rgba(47, 111, 246, 0.18);
+        }
+        .brand-mark img { width: 100%; height: 100%; display: block; object-fit: cover; }
+        .nav {
+            display: flex; align-items: center; gap: 22px;
+            color: var(--muted); font-size: 0.94rem;
+        }
+        .nav a:hover { color: var(--blue); }
+        .nav .download-mini {
+            color: #fff; background: var(--blue); border-radius: 999px;
+            padding: 9px 15px; font-weight: 750;
+        }
+        .nav .download-mini:hover { color: #fff; background: #245fe0; }
+        .hero {
+            display: grid;
+            grid-template-columns: minmax(0, 1.02fr) minmax(320px, 0.98fr);
+            gap: 54px; align-items: center;
+            min-height: calc(100vh - 76px); padding: 26px 0 72px;
+        }
+        .eyebrow {
+            display: inline-flex; align-items: center; gap: 8px;
+            color: #175ac0; background: #eef5ff; border: 1px solid #d9e8ff;
+            border-radius: 999px; padding: 7px 12px;
+            font-size: 0.9rem; font-weight: 750; margin-bottom: 20px;
+        }
+        h1 {
+            max-width: 780px;
+            font-size: clamp(2.4rem, 5.6vw, 4.6rem);
+            line-height: 1.06; letter-spacing: 0;
+        }
+        .hero-copy {
+            margin-top: 24px; max-width: 650px;
+            color: var(--muted); font-size: clamp(1.05rem, 2vw, 1.28rem);
+        }
+        .hero-slogan {
+            display: inline-flex; align-items: center; gap: 10px;
+            margin-top: 18px; color: #175ac0; background: #fff;
+            border: 1px solid #d9e8ff; border-radius: 8px;
+            padding: 12px 16px; font-size: clamp(1.08rem, 2vw, 1.35rem);
+            font-weight: 900; box-shadow: 0 12px 30px rgba(47, 111, 246, 0.12);
+        }
+        .hero-slogan i { color: var(--blue); font-size: 1rem; }
+        .hero-actions {
+            display: flex; align-items: center; flex-wrap: wrap;
+            gap: 14px; margin-top: 28px;
+        }
+        .app-store, .android-download, .btn-soon {
+            display: inline-flex; align-items: center; gap: 12px;
+            color: #fff; background: #111827; border-radius: 14px;
+            padding: 13px 20px; font-weight: 800;
+            box-shadow: 0 14px 34px rgba(17, 24, 39, 0.22);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .app-store:hover, .android-download:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 18px 42px rgba(17, 24, 39, 0.26);
+        }
+        .app-store i, .android-download i, .btn-soon i { font-size: 1.55rem; }
+        .android-download {
+            background: #137a58;
+            box-shadow: 0 14px 34px rgba(19, 122, 88, 0.18);
+        }
+        .android-download:hover {
+            background: #0f6548;
+            box-shadow: 0 18px 42px rgba(19, 122, 88, 0.24);
+        }
+        .btn-soon {
+            background: #617085;
+            box-shadow: 0 14px 34px rgba(97, 112, 133, 0.18);
+            cursor: default;
+        }
+        .download-note { margin-top: 14px; color: var(--muted); font-size: 0.9rem; }
+        .download-note a {
+            color: var(--blue); white-space: nowrap;
+            text-decoration: underline; text-underline-offset: 3px;
+        }
+        .secondary-link {
+            display: inline-flex; align-items: center; gap: 8px;
+            color: var(--blue); font-weight: 750; padding: 12px 0;
+        }
+        .phone-wrap {
+            display: flex; justify-content: center; align-items: center; min-height: 640px;
+        }
+        .mobile-phone-wrap { display: none; }
+        .phone-stage {
+            position: relative; width: min(420px, 92vw); min-height: 630px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .phone-frame {
+            width: min(360px, 82vw); overflow: hidden; background: #fff;
+            border-radius: 32px; box-shadow: 0 36px 82px rgba(15, 23, 42, 0.22); z-index: 1;
+        }
+        .app-shot {
+            width: 100%; height: auto; display: block; border: 0; border-radius: 32px;
+        }
+        .screenshot-grid {
+            display: grid; grid-template-columns: repeat(6, minmax(0, 1fr));
+            gap: 14px; margin-top: 28px;
+        }
+        .screenshot-card {
+            overflow: hidden; background: #fff; border: 1px solid var(--line);
+            border-radius: 8px; box-shadow: 0 12px 30px rgba(20, 37, 63, 0.06);
+        }
+        .screenshot-card img { width: 100%; height: auto; display: block; }
+        .blue { background: var(--blue); }
+        .green { background: var(--green); }
+        .red { background: var(--red); }
+        section { padding: 74px 0; }
+        .section-head { max-width: 760px; margin-bottom: 28px; }
+        .section-head h2 {
+            font-size: clamp(2rem, 4vw, 3.2rem); line-height: 1.12;
+        }
+        .section-head p { color: var(--muted); font-size: 1.06rem; margin-top: 12px; }
+        .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+        .card {
+            background: var(--panel); border: 1px solid var(--line);
+            border-radius: 8px; padding: 24px;
+            box-shadow: 0 12px 30px rgba(20, 37, 63, 0.06);
+        }
+        .card .icon {
+            width: 42px; height: 42px; display: grid; place-items: center;
+            color: #fff; border-radius: 8px; margin-bottom: 18px;
+        }
+        .card h3 { font-size: 1.16rem; margin-bottom: 8px; }
+        .card p { color: var(--muted); font-size: 0.98rem; }
+        .feature-panel {
+            background: #fff; border: 1px solid var(--line); border-radius: 8px;
+            padding: 32px; box-shadow: 0 12px 30px rgba(20, 37, 63, 0.05);
+        }
+        .feature-grid {
+            display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px;
+        }
+        .feature-card {
+            min-height: 176px; display: flex; flex-direction: column; gap: 12px;
+            border: 1px solid var(--line); border-radius: 8px; padding: 18px; background: #f8fbff;
+        }
+        .feature-card i {
+            width: 38px; height: 38px; display: grid; place-items: center;
+            color: #fff; border-radius: 8px; font-size: 1rem;
+        }
+        .feature-card h3 { font-size: 1.05rem; line-height: 1.28; }
+        .feature-card p { color: var(--muted); font-size: 0.95rem; }
+        .feature-note {
+            margin-top: 18px; color: #47607c; background: #eef5ff;
+            border: 1px solid #d9e8ff; border-radius: 8px; padding: 16px 18px; font-size: 0.98rem;
+        }
+        .scenarios {
+            display: grid; grid-template-columns: 1.08fr 0.92fr; gap: 22px; align-items: stretch;
+        }
+        .scenario-list { display: grid; gap: 12px; }
+        .scenario {
+            display: flex; align-items: flex-start; gap: 14px;
+            background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 18px;
+        }
+        .scenario i { width: 22px; color: var(--blue); font-size: 1.1rem; margin-top: 3px; }
+        .scenario strong { display: block; margin-bottom: 3px; }
+        .scenario p { color: var(--muted); font-size: 0.96rem; }
+        .quote-panel {
+            min-height: 100%; display: flex; flex-direction: column; justify-content: space-between;
+            background: #142033; color: #fff; border-radius: 8px; padding: 28px;
+        }
+        .quote-panel h3 { font-size: 2rem; line-height: 1.15; margin-bottom: 16px; }
+        .quote-panel p { color: #c8d3e3; }
+        .quote-panel .number {
+            color: var(--yellow); font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+            line-height: 1.2; font-weight: 900; margin-top: 28px;
+        }
+        .quote-panel .number span { display: block; }
+        .cta {
+            text-align: center; background: #eef5ff; border: 1px solid #d9e8ff;
+            border-radius: 8px; padding: 42px 24px;
+        }
+        .cta h2 { font-size: clamp(2rem, 4vw, 3rem); margin-bottom: 12px; }
+        .cta p { color: var(--muted); margin-bottom: 26px; font-size: 1.05rem; }
+        .download-actions { display: flex; justify-content: center; flex-wrap: wrap; gap: 14px; }
+        footer {
+            border-top: 1px solid var(--line); padding: 28px 0 34px;
+            color: var(--muted); font-size: 0.92rem;
+        }
+        .footer-inner { display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+        .footer-links { display: flex; gap: 16px; flex-wrap: wrap; }
+        .footer-links a:hover { color: var(--blue); }
+        @media (max-width: 900px) {
+            .hero, .scenarios { grid-template-columns: 1fr; }
+            .hero { min-height: auto; padding-bottom: 42px; }
+            .hero > .phone-wrap { display: none; }
+            .mobile-phone-wrap { display: flex; margin-top: 30px; }
+            .phone-wrap { min-height: auto; }
+            .phone-stage { min-height: auto; }
+            .cards { grid-template-columns: 1fr; }
+            .feature-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .screenshot-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+        @media (max-width: 640px) {
+            .page { width: min(100% - 24px, 1120px); }
+            .nav a:not(.download-mini) { display: none; }
+            .hero { min-height: auto; padding-top: 16px; padding-bottom: 42px; }
+            .hero-actions { align-items: stretch; flex-direction: column; }
+            .app-store, .android-download, .btn-soon, .secondary-link { justify-content: center; }
+            .download-actions { flex-direction: column; }
+            .phone-frame { width: min(328px, 100%); }
+            .feature-panel { padding: 20px; }
+            .feature-grid { grid-template-columns: 1fr; }
+            section { padding: 52px 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <header class="topbar">
+            <a class="brand" href="#top" aria-label="HeePic 首页">
+                <span class="brand-mark" aria-hidden="true"><img src="assets/app-icon-web.png" alt=""></span>
+                <span>HeePic</span>
+            </a>
+            <nav class="nav" aria-label="页面导航">
+                <a href="#privacy-first">隐私优先</a>
+                <a href="#features">核心功能</a>
+                <a href="#scenes">使用场景</a>
+                <a href="#download" class="download-mini">下载</a>
+                <a href="en/">English</a>
+            </nav>
+        </header>
+
+        <main id="top">
+            <section class="hero" aria-labelledby="hero-title">
+                <div>
+                    <div class="eyebrow">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        私密相册保险箱
+                    </div>
+                    <h1 id="hero-title">照片、视频和文件，先上锁再打开。</h1>
+                    <p class="hero-copy">
+                        HeePic 把私密相册、视频、音频和文件收进本地保险箱。密码、Face ID、翻转锁定和位置锁多层防护，内容默认留在本机，不自动同步到我们的服务器。
+                    </p>
+                    <div class="hero-slogan">
+                        <i class="fa-solid fa-lock"></i>
+                        本地存储 · 密码保护 · 隐私优先
+                    </div>
+                    <div class="hero-actions">
+                        <span class="btn-soon" aria-label="App Store 即将上架">
+                            <i class="fa-brands fa-apple"></i>
+                            <span>App Store 即将上架</span>
+                        </span>
+                        <span class="btn-soon" aria-label="Android 即将上架">
+                            <i class="fa-brands fa-android" aria-hidden="true"></i>
+                            <span>Android 即将上架</span>
+                        </span>
+                        <a class="secondary-link" href="#privacy-first">
+                            先了解隐私保护 <i class="fa-solid fa-arrow-down"></i>
+                        </a>
+                    </div>
+                    <p class="download-note">iOS 16+ · Android 8.0+ · 国内包 HeePic · 国际包 HeePic Int · <a href="privacy.html">隐私政策</a></p>
+                </div>
+
+                <div class="phone-wrap" aria-label="HeePic App 界面预览">
+                    <div class="phone-stage">
+                        <div class="phone-frame">
+                            <img class="app-shot" src="assets/screenshot-lock.png" alt="HeePic 密码锁界面" width="443" height="960" decoding="async">
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="privacy-first" aria-labelledby="privacy-first-title">
+                <div class="section-head">
+                    <h2 id="privacy-first-title">先把隐私边界立住。</h2>
+                    <p>保险箱内容主要保存在设备本地。打开、导入、备份和传输都由你主动发起；我们不会自动把相册内容上传到公网服务器。</p>
+                </div>
+                <div class="feature-panel">
+                    <div class="feature-grid">
+                        <article class="feature-card">
+                            <i class="fa-solid fa-key blue"></i>
+                            <h3>密码与生物识别</h3>
+                            <p>首次使用设置密码，支持 Face ID / 指纹。也可设置游客密码，保护主库不被旁人看到。</p>
+                        </article>
+                        <article class="feature-card">
+                            <i class="fa-solid fa-mobile-screen green"></i>
+                            <h3>翻转锁定</h3>
+                            <p>手机屏幕朝下即可自动锁定，临时把手机递出去时更安心。</p>
+                        </article>
+                        <article class="feature-card">
+                            <i class="fa-solid fa-location-dot blue"></i>
+                            <h3>位置锁</h3>
+                            <p>只在你信任的位置允许解锁，离开安全区域后拒绝打开保险箱。</p>
+                        </article>
+                        <article class="feature-card">
+                            <i class="fa-solid fa-camera red"></i>
+                            <h3>入侵拍摄</h3>
+                            <p>可开启解锁失败时拍照，记录留在本机，可随时查看或关闭。</p>
+                        </article>
+                    </div>
+                    <p class="feature-note">核心不是把内容“存到云端”，而是把私密内容收进你掌控的本地保险箱，并用多层锁把入口守住。</p>
+                </div>
+                <div class="phone-wrap mobile-phone-wrap" aria-label="HeePic App 界面预览">
+                    <div class="phone-stage">
+                        <div class="phone-frame">
+                            <img class="app-shot" src="assets/screenshot-lock.png" alt="HeePic 密码锁界面" width="443" height="960" loading="lazy" decoding="async">
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="features" aria-labelledby="features-title">
+                <div class="section-head">
+                    <h2 id="features-title">不止相册，还是私密工具箱。</h2>
+                    <p>导入照片与视频、分类收藏、局域网传输、加密备份，把常用隐私场景收进同一个 App。</p>
+                </div>
+                <div class="cards">
+                    <article class="card">
+                        <div class="icon blue"><i class="fa-solid fa-images"></i></div>
+                        <h3>私密相册与文件</h3>
+                        <p>照片、视频、音频和文件可分类收纳，支持收藏与沉浸浏览。</p>
+                    </article>
+                    <article class="card">
+                        <div class="icon green"><i class="fa-solid fa-wifi"></i></div>
+                        <h3>局域网传输</h3>
+                        <p>通过 Wi‑Fi 或 USB 与电脑互传，不经过我们的公网服务器。</p>
+                    </article>
+                    <article class="card">
+                        <div class="icon red"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+                        <h3>加密备份</h3>
+                        <p>主动创建加密备份并自行保管口令；也可按需导出到你选择的位置。</p>
+                    </article>
+                </div>
+                <div class="screenshot-grid" aria-label="HeePic 功能截图">
+                    <figure class="screenshot-card">
+                        <img src="assets/screenshot-lock.png" alt="密码锁" width="443" height="960" loading="lazy" decoding="async">
+                    </figure>
+                    <figure class="screenshot-card">
+                        <img src="assets/screenshot-albums.png" alt="私密相册" width="443" height="960" loading="lazy" decoding="async">
+                    </figure>
+                    <figure class="screenshot-card">
+                        <img src="assets/screenshot-import.png" alt="导入到保险箱" width="443" height="960" loading="lazy" decoding="async">
+                    </figure>
+                    <figure class="screenshot-card">
+                        <img src="assets/screenshot-favorites.png" alt="收藏浏览" width="443" height="960" loading="lazy" decoding="async">
+                    </figure>
+                    <figure class="screenshot-card">
+                        <img src="assets/screenshot-security.png" alt="多重隐私防护" width="443" height="960" loading="lazy" decoding="async">
+                    </figure>
+                    <figure class="screenshot-card">
+                        <img src="assets/screenshot-backup.png" alt="加密备份" width="443" height="960" loading="lazy" decoding="async">
+                    </figure>
+                </div>
+            </section>
+
+            <section id="scenes" aria-labelledby="scenes-title">
+                <div class="scenarios">
+                    <div>
+                        <div class="section-head">
+                            <h2 id="scenes-title">把不想被随手翻到的内容收起来。</h2>
+                            <p>家人共用手机、外借设备、工作与生活照片混杂时，先锁再打开更安心。</p>
+                        </div>
+                        <div class="scenario-list">
+                            <div class="scenario">
+                                <i class="fa-solid fa-user-lock"></i>
+                                <div>
+                                    <strong>私人照片与证件</strong>
+                                    <p>把证件照、家庭照片和敏感截图移入保险箱，系统相册里不再随手可见。</p>
+                                </div>
+                            </div>
+                            <div class="scenario">
+                                <i class="fa-solid fa-briefcase"></i>
+                                <div>
+                                    <strong>工作资料临时归档</strong>
+                                    <p>合同、票据和截图先收进保险箱，需要时再导出或备份。</p>
+                                </div>
+                            </div>
+                            <div class="scenario">
+                                <i class="fa-solid fa-shield-halved"></i>
+                                <div>
+                                    <strong>外借手机也不慌</strong>
+                                    <p>翻转锁定、位置锁和游客密码，减少旁人误入主库的风险。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <aside class="quote-panel">
+                        <div>
+                            <h3>内容在你手上，锁也在你手上。</h3>
+                            <p>HeePic 帮你整理和保护本地私密内容。密码与备份口令由你保管，我们无法代为找回。</p>
+                        </div>
+                        <div class="number">
+                            <span>本地优先</span>
+                            <span>不自动云同步保险箱内容</span>
+                        </div>
+                    </aside>
+                </div>
+            </section>
+
+            <section id="download">
+                <div class="cta">
+                    <h2>下载 HeePic，先给私密内容上一道锁。</h2>
+                    <p>应用商店上架后，这里会更新正式下载入口。上线前可先阅读隐私政策与用户协议。</p>
+                    <div class="download-actions">
+                        <span class="btn-soon">
+                            <i class="fa-brands fa-apple" aria-hidden="true"></i>
+                            <span>App Store 即将上架</span>
+                        </span>
+                        <span class="btn-soon">
+                            <i class="fa-brands fa-android" aria-hidden="true"></i>
+                            <span>Android 即将上架</span>
+                        </span>
+                    </div>
+                    <p class="download-note">包名：iOS <code>com.heebox.HeePic</code> / <code>com.heebox.HeePic.int</code> · Android <code>com.heebox.family.heepic</code> / <code>com.heebox.family.heepic.int</code></p>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <div class="footer-inner">
+                <div>
+                    <p>© 2026 HeePic</p>
+                    <p>运营者：鹤壁市黑盒智创信息技术有限责任公司</p>
+                    <p>联系我们：heebox2025@heebox.site</p>
+                </div>
+                <div class="footer-links">
+                    <a href="en/">English</a>
+                    <a href="privacy.html">隐私政策</a>
+                    <a href="terms.html">用户协议</a>
+                    <a href="mailto:heebox2025@heebox.site">联系邮箱</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>
